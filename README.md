@@ -36,7 +36,7 @@ graph LR
     B -->C
     C --> D(CloudWatch Events)
     D -->E(Booking - AWS Lamda)
-    E -->F(Gym )
+    E -->F(Gym Web)
 ````
 
 ## Using the Bot 💬
