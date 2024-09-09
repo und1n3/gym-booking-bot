@@ -12,10 +12,9 @@ This project is a Telegram bot that helps you book your gym classes in advance. 
 ## Getting Started 🚀
 What You Need
 
-- AWS account 
-- AWS CLI set up and ready
-- Telegram Bot Token (create one using BotFather)
-- Node.js installed
+- AWS account
+- Telegram Bot Token (create one using [BotFather](https://telegram.me/BotFather))
+- [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
 
 ## Structure
 
