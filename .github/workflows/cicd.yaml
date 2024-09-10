@@ -1,0 +1,40 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main]
+  pull_request:
+    branches: [ main]
+
+
+jobs:
+  diff:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
+    steps:
+      - uses: eloymg/github-actions/actions/setup-cdk@v0.1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Login to aws
+        uses: aws-actions/configure-aws-credentials@v4
+        id: aws-login
+        with:
+          role-to-assume: ${{ secrets.rolearn }}
+          aws-region: "eu-west-1"
+          audience: sts.amazonaws.com
+      - name: CDK diff
+        shell: bash
+        run: |
+          OUTPUT=$(cdk diff|tr '$'  ' '|tr '/"' ' ')
+          echo "CDK_DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "$OUTPUT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Colorize
+        uses: eloymg/github-actions/actions/colorize-cdk-diff@v0.1
+        with:
+          cdk-diff-output: ${{ env.CDK_DIFF_OUTPUT }}
