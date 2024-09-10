@@ -14,7 +14,7 @@ jobs:
       contents: read
       pull-requests: write
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/master'
+    if: github.ref != 'refs/heads/main'
     steps:
       - uses: eloymg/github-actions/setup-cdk@v0.1
       - uses: actions/setup-python@v5
@@ -35,6 +35,6 @@ jobs:
           echo "$OUTPUT" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
       - name: Colorize
-        uses: eloymg/github-actions/colorize-cdk-diff@v0.1
+        uses: eloymg/github-actions/colorize-diff@v0.1
         with:
           cdk-diff-output: ${{ env.CDK_DIFF_OUTPUT }}
