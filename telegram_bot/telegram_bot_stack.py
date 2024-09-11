@@ -44,7 +44,7 @@ class TelegramBotStack(Stack):
             entry="lambda/bot_lambda",
             retry_attempts=0,
             environment={"BOOKING_LAMBDA_ARN": booking_lambda.function_arn,
-                         'WHITELIST':os.environ('WHITELIST')},
+                         'WHITELIST':os.environ['WHITELIST']},
         )
         telegram_bot_lambda.add_to_role_policy(
             statement=aws_iam.PolicyStatement(
