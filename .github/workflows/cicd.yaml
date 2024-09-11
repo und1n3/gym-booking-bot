@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [ main]
 
-
+env:
+  WHITELIST: ${{secrets.WHITELIST}}
 jobs:
   diff:
     permissions:
