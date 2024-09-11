@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 if os.path.exists('whitelist.json'):
     whitelist = json.load(open('whitelist.json'))['whitelist']
 else:
-    whitelist = json.loads(os.environ('whitelist'))['whitelist']
+    whitelist = json.loads(os.environ['WHITELIST'])['whitelist']
     
 
 ssm = boto3.client("ssm")
