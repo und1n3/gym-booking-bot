@@ -48,10 +48,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: poetry
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
       - name: Install requirements
         shell: bash
-        run: pip install -r requirements.txt
+        run: poetry install && poetry shell
       - name: Login to aws
         uses: aws-actions/configure-aws-credentials@v4
         id: aws-login
@@ -84,9 +96,22 @@ jobs:
         with:
           python-version: '3.12'
           cache: poetry
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
       - name: Install requirements
         shell: bash
-        run: pip install -r requirements.txt
+        run: poetry install && poetry shell
       - name: Login to aws
         uses: aws-actions/configure-aws-credentials@v4
         id: aws-login
