@@ -74,7 +74,7 @@ jobs:
       - name: CDK diff
         shell: bash
         run: |
-          OUTPUT=$(cdk diff|tr '$'  ' '|tr '/"' ' ')
+          OUTPUT=$(poetry run cdk diff|tr '$'  ' '|tr '/"' ' ')
           echo "CDK_DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
           echo "$OUTPUT" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -121,4 +121,4 @@ jobs:
           audience: sts.amazonaws.com
       - name: CDK deploy
         run: |
-          cdk deploy --all --concurrency 20 --require-approval never
+          poetry run cdk deploy --all --concurrency 20 --require-approval never
