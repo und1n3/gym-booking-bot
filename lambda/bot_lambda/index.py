@@ -6,11 +6,11 @@ import boto3
 import pytz
 from datetime import datetime, timedelta
 
-if os.path.exists('whitelist.json'):
-    whitelist = json.load(open('whitelist.json'))['whitelist']
+if os.path.exists("whitelist.json"):
+    whitelist = json.load(open("whitelist.json"))["whitelist"]
 else:
-    whitelist = json.loads(os.environ['WHITELIST'])['whitelist']
-    
+    whitelist = json.loads(os.environ["WHITELIST"])["whitelist"]
+
 
 ssm = boto3.client("ssm")
 events = boto3.client("events")
@@ -122,7 +122,7 @@ def scheduler(username, class_name, class_day, class_hour):
     )
     print(cron_expression)
     # Create cloudwatch event rule
-    response = events.put_rule(
+    events.put_rule(
         Name=scheduler_name,
         ScheduleExpression=f"cron({cron_expression})",
         State="ENABLED",

@@ -10,6 +10,7 @@ from aws_cdk import (
 from constructs import Construct
 import os
 
+
 class TelegramBotStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
@@ -43,8 +44,10 @@ class TelegramBotStack(Stack):
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             entry="lambda/bot_lambda",
             retry_attempts=0,
-            environment={"BOOKING_LAMBDA_ARN": booking_lambda.function_arn,
-                         'WHITELIST':os.environ['WHITELIST']},
+            environment={
+                "BOOKING_LAMBDA_ARN": booking_lambda.function_arn,
+                "WHITELIST": os.environ["WHITELIST"],
+            },
         )
         telegram_bot_lambda.add_to_role_policy(
             statement=aws_iam.PolicyStatement(

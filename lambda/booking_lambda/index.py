@@ -33,7 +33,7 @@ def login(username, password):
     }
 
     # Send the POST request to login
-    login_response = session.post(login_url, data=payload)
+    session.post(login_url, data=payload)
     return session
 
 
