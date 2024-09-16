@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "gym-booking-bot"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aws-cdk-lib = "2.143.0"
+constructs = ">=10.3.0"
+requests = "2.32.2"
+aws-cdk-aws-lambda-python-alpha = "2.143.0a0"
+
+
+[tool.poetry.group.code_quality.dependencies]
+ruff = "^0.6.5"
+pre-commit = "^3.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
