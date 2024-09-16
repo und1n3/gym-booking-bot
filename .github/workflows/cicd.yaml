@@ -16,13 +16,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: poetry
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
       - name: Install requirements
         shell: bash
-        run: pip install poetry==1.8.3 && poetry install --only=code_quality
-      - name: Install requirements
+        run: poetry install --only=code_quality
+      - name: Run Ruff
         shell: bash
-        run: ruff check . && ruff format -q
+        run: poetry run ruff check . && poetry run ruff format -q
       
   diff:
     permissions:
