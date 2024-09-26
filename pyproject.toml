@@ -22,11 +22,13 @@ pre-commit = "^3.8.0"
 [tool.poetry.group.booking_lambda.dependencies]
 requests = "2.32.2"
 beautifulsoup4 = "^4.12.3"
+boto3 = "^1.35.19"
 
 
 [tool.poetry.group.bot_lambda.dependencies]
 requests = "2.32.2"
 pytz = "^2024.2"
+boto3 = "^1.35.19"
 
 [build-system]
 requires = ["poetry-core"]
