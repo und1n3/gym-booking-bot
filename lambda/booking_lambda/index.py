@@ -91,7 +91,7 @@ def book_class(session, class_name, class_time):
     print(booking_response)
     if booking_response.status_code != 200:
         return False
-    if booking_response.json()["message"] != "Reservation correctly made":
+    if "Reservation correctly made" not in booking_response.text:
         return False
     return True
 
