@@ -164,7 +164,7 @@ def password_command(chat_id, username, password_text):
 
 def save_chat_id(chat_id, username):
     ssm.put_parameter(
-        Name=f"{username}_chat_id", Value=chat_id, Type="String", Overwrite=True
+        Name=f"{username}_chat_id", Value=str(chat_id), Type="String", Overwrite=True
     )
 
 def send_message(chat_id, message):

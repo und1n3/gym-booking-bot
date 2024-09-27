@@ -134,7 +134,7 @@ def handler(event, _):
 
     # return answer if chat_id exists
     try:
-        chat_id = ssm.get_parameter(Name=f"{telegram_user}_chat_id")["Parameter"]["Value"]
+        chat_id = int(ssm.get_parameter(Name=f"{telegram_user}_chat_id")["Parameter"]["Value"])
         if result:
             notify_booking(chat_id, class_name, class_time)
         else:
