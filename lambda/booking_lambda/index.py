@@ -34,7 +34,7 @@ def login(username, password):
     }
 
     # Send the POST request to login
-    login_response = session.post(login_url, data=payload)
+    session.post(login_url, data=payload)
     return session
 
 
@@ -89,7 +89,11 @@ def book_class(session, class_name, class_time):
         headers=headers,
     )
     print(booking_response)
-    print(booking_response.text)
+    if booking_response.status_code != 200:
+        return False
+    if booking_response.json()["message"] != "Reservation correctly made":
+        return False
+    return True
 
 def send_message(chat_id, message):
     token = TELEGRAM_TOKEN
@@ -98,7 +102,11 @@ def send_message(chat_id, message):
     requests.post(url, data=data)
 
 def notify_booking(chat_id, class_name, class_time):
-    message = f"Reserva feta de {class_name} a les {class_time}"
+    message = f"Reserva feta de {class_name} a les {class_time}!"
+    send_message(chat_id, message)
+
+def notify_problem(chat_id, class_name, class_time):
+    message = f"Hi ha hagut un problema amb la reserva de {class_name} a les {class_time}"
     send_message(chat_id, message)
 
 def handler(event, _):
@@ -119,12 +127,20 @@ def handler(event, _):
     # Implement your booking logic here
     username = ssm.get_parameter(Name=f"{telegram_user}_user")["Parameter"]["Value"]
     password = ssm.get_parameter(Name=f"{telegram_user}_password")["Parameter"]["Value"]
-    chat_id = ssm.get_parameter(Name=f"{telegram_user}_chat_id")["Parameter"]["Value"]
+
 
     session = login(username, password)
-    session = book_class(session, class_name, class_time)
+    result = book_class(session, class_name, class_time)
 
-    notify_booking(chat_id, class_name, class_time)
+    # return answer if chat_id exists
+    try:
+        chat_id = ssm.get_parameter(Name=f"{telegram_user}_chat_id")["Parameter"]["Value"]
+        if result:
+            notify_booking(chat_id, class_name, class_time)
+        else:
+            notify_problem(chat_id, class_name, class_time)
+    except Exception as e:
+        print(e)
 
     return {
         "statusCode": 200,
