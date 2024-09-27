@@ -122,7 +122,7 @@ def scheduler(username, class_name, class_day, class_hour):
     )
     print(cron_expression)
     # Create cloudwatch event rule
-    response = events.put_rule(
+    events.put_rule(
         Name=scheduler_name,
         ScheduleExpression=f"cron({cron_expression})",
         State="ENABLED",
@@ -162,6 +162,10 @@ def password_command(chat_id, username, password_text):
     message = "Fet! Pots veure les opcions del bot escrivint /info."
     send_message(chat_id, message)
 
+def save_chat_id(chat_id, username):
+    ssm.put_parameter(
+        Name=f"{username}_chat_id", Value=chat_id, Type="String", Overwrite=True
+    )
 
 def send_message(chat_id, message):
     token = TELEGRAM_TOKEN
@@ -201,6 +205,7 @@ def handler(event, _):
                     password_command(chat_id, username, password_text)
                 case _:
                     send_message(chat_id, "No entenc aquesta comanda.")
+            save_chat_id(chat_id,username)        
         else:
             send_message(chat_id, "Unauthorised User.")
         return {"statusCode": 200, "body": json.dumps("Message processed!")}

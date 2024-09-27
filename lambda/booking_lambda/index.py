@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 
 class_mapper = json.load(open("class_mapper.json"))
 ssm = boto3.client("ssm")
-
+telegram_token_parameter = ssm.get_parameter(Name="fitness_bot_telegram_token")
+TELEGRAM_TOKEN = telegram_token_parameter["Parameter"]["Value"]
 
 def login(username, password):
     # Define the login URL and the action URL (form action)
@@ -33,7 +34,7 @@ def login(username, password):
     }
 
     # Send the POST request to login
-    login_response = session.post(login_url, data=payload)
+    session.post(login_url, data=payload)
     return session
 
 
@@ -88,10 +89,27 @@ def book_class(session, class_name, class_time):
         headers=headers,
     )
     print(booking_response)
-    print(booking_response.text)
+    if booking_response.status_code != 200:
+        return False
+    if booking_response.json()["message"] != "Reservation correctly made":
+        return False
+    return True
 
+def send_message(chat_id, message):
+    token = TELEGRAM_TOKEN
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = {"chat_id": chat_id, "text": message}
+    requests.post(url, data=data)
 
-def handler(event, context):
+def notify_booking(chat_id, class_name, class_time):
+    message = f"Reserva feta de {class_name} a les {class_time}!"
+    send_message(chat_id, message)
+
+def notify_problem(chat_id, class_name, class_time):
+    message = f"Hi ha hagut un problema amb la reserva de {class_name} a les {class_time}"
+    send_message(chat_id, message)
+
+def handler(event, _):
     # Extract parameters from the event
     event_name = event["resources"][0].split("/")[-1]
     pattern = r"(?P<telegram_user>.+)_(?P<class_name>[^_]+)_(?P<class_day>[^_]+)_(?P<class_time>\d+)"
@@ -110,8 +128,19 @@ def handler(event, context):
     username = ssm.get_parameter(Name=f"{telegram_user}_user")["Parameter"]["Value"]
     password = ssm.get_parameter(Name=f"{telegram_user}_password")["Parameter"]["Value"]
 
+
     session = login(username, password)
-    session = book_class(session, class_name, class_time)
+    result = book_class(session, class_name, class_time)
+
+    # return answer if chat_id exists
+    try:
+        chat_id = ssm.get_parameter(Name=f"{telegram_user}_chat_id")["Parameter"]["Value"]
+        if result:
+            notify_booking(chat_id, class_name, class_time)
+        else:
+            notify_problem(chat_id, class_name, class_time)
+    except Exception as e:
+        print(e)
 
     return {
         "statusCode": 200,
