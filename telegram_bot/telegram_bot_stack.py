@@ -22,7 +22,7 @@ class TelegramBotStack(Stack):
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             entry="lambda/booking_lambda",
             retry_attempts=0,
-            timeout=Duration.seconds(20),
+            timeout=Duration.seconds(30),
         )
 
         booking_lambda.add_to_role_policy(
