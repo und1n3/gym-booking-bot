@@ -9,6 +9,33 @@ on:
 env:
   WHITELIST: ${{secrets.WHITELIST}}
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
+      - name: Install requirements
+        shell: bash
+        run: poetry install --only=code_quality
+      - name: Run Ruff
+        shell: bash
+        run: poetry run ruff check . && poetry run ruff format -q
+      
   diff:
     permissions:
       id-token: write
@@ -21,10 +48,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
       - name: Install requirements
         shell: bash
-        run: pip install -r requirements.txt
+        run: poetry install
       - name: Login to aws
         uses: aws-actions/configure-aws-credentials@v4
         id: aws-login
@@ -35,7 +74,7 @@ jobs:
       - name: CDK diff
         shell: bash
         run: |
-          OUTPUT=$(cdk diff|tr '$'  ' '|tr '/"' ' ')
+          OUTPUT=$(poetry run cdk diff|tr '$'  ' '|tr '/"' ' ')
           echo "CDK_DIFF_OUTPUT<<EOF" >> $GITHUB_ENV
           echo "$OUTPUT" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -56,10 +95,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
+          cache: poetry
+      - name: Bootstrap poetry
+        run: pipx install poetry
+      - name: Configure poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry env use python
+      - name: Set up cache
+        uses: actions/cache@v3
+        if: matrix.project != 'poetry-core'
+        id: cache
+        with:
+          path: ./.venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('poetry.lock') }}
       - name: Install requirements
         shell: bash
-        run: pip install -r requirements.txt
+        run: poetry install
       - name: Login to aws
         uses: aws-actions/configure-aws-credentials@v4
         id: aws-login
@@ -69,4 +121,4 @@ jobs:
           audience: sts.amazonaws.com
       - name: CDK deploy
         run: |
-          cdk deploy --all --concurrency 20 --require-approval never
+          poetry run cdk deploy --all --concurrency 20 --require-approval never

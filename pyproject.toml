@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "gym-booking-bot"
+version = "0.1.0"
+description = ""
+authors = ["und1n3 <no@mail.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aws-cdk-lib = "2.143.0"
+requests = "2.32.2"
+aws-cdk-aws-lambda-python-alpha = "2.143.0a0"
+
+
+[tool.poetry.group.code_quality.dependencies]
+ruff = "^0.6.5"
+pre-commit = "^3.8.0"
+
+
+[tool.poetry.group.booking_lambda.dependencies]
+requests = "2.32.2"
+beautifulsoup4 = "^4.12.3"
+boto3 = "^1.35.19"
+
+
+[tool.poetry.group.bot_lambda.dependencies]
+requests = "2.32.2"
+pytz = "^2024.2"
+boto3 = "^1.35.19"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
