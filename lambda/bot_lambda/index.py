@@ -179,9 +179,13 @@ def handler(event, _):
         print(event)
         body = json.loads(event["body"])
         print(body)
-        chat_id = body["message"]["chat"]["id"]
-        username = body["message"]["chat"]["username"]
-        message_text = body["message"]["text"]
+        if "message" in body.keys():
+            body_message = body['message']
+        else:
+            body_message = body['edited_message']
+        chat_id = body_message["chat"]["id"]
+        username = body_message["chat"]["username"]
+        message_text = body_message["text"]
         command_text = re.search(r"/\w+", message_text).group(0)
         if username in whitelist:
             match command_text:
