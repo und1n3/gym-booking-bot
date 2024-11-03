@@ -209,7 +209,7 @@ def handler(event, _):
                     )
                     password_command(chat_id, username, password_text)
                 case _:
-                    send_message(chat_id, "No entenc aquesta comanda. Aquí tens les opcions disponibles:")
+                    send_message(chat_id, "No entenc aquesta comanda.")
                     info_command(chat_id)
             save_chat_id(chat_id,username)        
         else:
