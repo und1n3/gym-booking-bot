@@ -186,7 +186,8 @@ def handler(event, _):
         chat_id = body_message["chat"]["id"]
         username = body_message["chat"]["username"]
         message_text = body_message["text"]
-        command_text = re.search(r"/\w+", message_text).group(0)
+        matched_text = re.search(r"/\w+", message_text)
+        command_text = '/' if matched_text is None else matched_text.group(0)
         if username in whitelist:
             match command_text:
                 case "/start":
@@ -208,7 +209,8 @@ def handler(event, _):
                     )
                     password_command(chat_id, username, password_text)
                 case _:
-                    send_message(chat_id, "No entenc aquesta comanda.")
+                    send_message(chat_id, "No entenc aquesta comanda. Aquí tens les opcions disponibles:")
+                    info_command(chat_id)
             save_chat_id(chat_id,username)        
         else:
             send_message(chat_id, "Unauthorised User.")
